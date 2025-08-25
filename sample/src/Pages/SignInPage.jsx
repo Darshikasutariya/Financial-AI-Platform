@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { use } from 'react'
 import useTheme from '../hooks/useTheme';
 import { LuBrain, LuMail, LuLock, LuEye, LuEyeOff, LuShield, LuZap } from "react-icons/lu";
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Header from '@/components/header';
+import Dashboard from './DashBoard';
+import { useNavigate } from 'react-router-dom';
 
 const features = [
   { icon: LuShield, title: 'Secure Login', description: "Bank-level encryption" },
@@ -11,6 +13,13 @@ const features = [
 ]
 
 const SignInPage = ({ isDark, toggleTheme }) => {
+
+  const navigate = useNavigate();
+
+  const handleSignIn = (e) => {
+    e.preventDefault();
+    navigate('/Dashboard');
+  }
 
   return (
     <>
@@ -193,7 +202,7 @@ const SignInPage = ({ isDark, toggleTheme }) => {
                     >Forgot Password?</button>
                   </div>
                   {/* SignIn */}
-                  <button type="submit" className="text-white flex justify-center items-center w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 font-semibold py-4 rounded-xl text-lg transition-all duration-300 shadow-lg hover:shadow-emerald-500/25 ">Sign In Now</button>
+                  <button onClick={handleSignIn} type="submit" className="text-white flex justify-center items-center w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 font-semibold py-4 rounded-xl text-lg transition-all duration-300 shadow-lg hover:shadow-emerald-500/25 ">Sign In Now</button>
                   {/* Sign Up link */}
                   <div className=''>
                     <span className={`${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Don't have an account?</span>

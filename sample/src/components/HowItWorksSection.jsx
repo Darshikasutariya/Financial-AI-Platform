@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { color, motion, number } from "framer-motion"
 import { LuArrowRight, LuBrain, LuCheck, LuCreditCard, LuPlay, LuUserPlus } from 'react-icons/lu'
 import { FiCheckCircle } from "react-icons/fi";
@@ -65,6 +65,34 @@ const features = [
 const HowItWorksSection = ({ isDark }) => {
 
     const [activeStep, setActiveStep] = useState(0);
+    const [isAutoPlay, setIsAutoPlay] = useState(true);
+    const intervalRef = useRef(null);
+
+    // Auto change steps
+    useEffect(() => {
+        if (!isAutoPlay) return; // ✅ if stopped, skip interval
+
+        const interval = setInterval(() => {
+            setActiveStep((prev) => (prev + 1) % steps.length);
+        }, 4000);
+
+        return () => clearInterval(interval);
+    }, [isAutoPlay]);
+
+    // stop autoplay function
+    const stopAutoPlay = () => {
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+        }
+    };
+
+    // Handle manual click
+    const handleStepClick = (index) => {
+        setActiveStep(index);
+        stopAutoPlay(); // stop automatic rotation once user clicks
+    };
+
     return (
         <section id='how-it-works' className={`py-24 px-6 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
             <div className='max-w-7xl mx-auto'>
@@ -83,6 +111,15 @@ const HowItWorksSection = ({ isDark }) => {
                     <h2 className={`text-5xl lg:text-6xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                         How it works?
                     </h2>
+                    <button
+                        onClick={() => setIsAutoPlay(!isAutoPlay)}
+                        className={`mt-4 px-5 py-2 rounded-lg font-semibold transition ${isDark
+                            ? 'bg-emerald-600 text-white hover:bg-emerald-500'
+                            : 'bg-emerald-500 text-white hover:bg-emerald-600'
+                            }`}
+                    >
+                        {isAutoPlay ? '⏸ Pause Auto Change' : '▶ Resume Auto Change'}
+                    </button>
                 </motion.div>
 
                 {/* Steps for Processing */}
