@@ -4,7 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import Home from './Pages/Home'
 import SignInPage from './Pages/SignInPage'
 import SignUpPage from './Pages/SignUpPage'
-import DashBoard from './Pages/DashBoard'
+import DashBoard from './Pages/Dashboard/DashBoard'
 import AccountDetail from './components/accountdetail'
 import AddTransactionPage from './components/addtransactionpage'
 import './index.css'
@@ -14,6 +14,7 @@ import AdminDashboard from "./Pages/Admin/AdminDashboard";
 import ContentManagement from './Pages/Admin/ContentManagement';
 import FinancialDataManagement from './Pages/Admin/FinancialDataManagement';
 import UserManagement from './Pages/Admin/UserManagement';
+import Profile from './Pages/Dashboard/Profile';
 
 function App() {
   const { isDark, toggleTheme } = useTheme();
@@ -25,6 +26,7 @@ function App() {
         <Route path="/SignInPage" element={<SignInPage isDark={isDark} />} />
         <Route path="/SignUpPage" element={<SignUpPage isDark={isDark} />} />
         <Route path="/Dashboard" element={<DashBoard isDark={isDark} toggleTheme={toggleTheme} />} />
+        <Route path="/Profile" element={<Profile isDark={isDark} />} />
         <Route path='/accounts/:name' element={<AccountDetail isDark={isDark} />} />
         <Route path='/accounts/:name/AddTransaction' element={<AddTransactionPage isDark={isDark} />} />
 

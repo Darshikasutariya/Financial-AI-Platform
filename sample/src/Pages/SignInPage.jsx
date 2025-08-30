@@ -4,7 +4,7 @@ import { LuBrain, LuMail, LuLock, LuEye, LuEyeOff, LuShield, LuZap } from "react
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Header from '@/components/header';
-import Dashboard from './DashBoard';
+import Dashboard from './Dashboard/DashBoard';
 import { useNavigate } from 'react-router-dom';
 
 const features = [
@@ -207,7 +207,7 @@ const SignInPage = ({ isDark, toggleTheme }) => {
                   <div className=''>
                     <span className={`${isDark ? 'text-gray-300' : 'text-gray-700'}`}>Don't have an account?</span>
                     <Link
-                      to="/signup"
+                      to="/SignUpPage"
                       className="font-semibold text-emerald-500 hover:text-emerald-400 transition-colors"
                     >
                       Sign up here

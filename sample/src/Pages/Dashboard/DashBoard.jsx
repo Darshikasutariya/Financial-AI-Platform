@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Plus,
     Settings,
@@ -20,7 +20,9 @@ import {
     ShoppingBag,
     User,
     Sun,
-    Moon
+    Moon,
+    LogOut,
+    X
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { Link, useNavigate } from 'react-router-dom';
@@ -28,12 +30,29 @@ import { Link, useNavigate } from 'react-router-dom';
 const Dashboard = ({ isDark, toggleTheme }) => {
     const [balanceVisible, setBalanceVisible] = useState(true);
     const [selectedPeriod, setSelectedPeriod] = useState('30d');
+    const [showSettingsMenu, setShowSettingsMenu] = useState(false);
+    const [showNotifications, setShowNotifications] = useState(false);
     const navigate = useNavigate();
+    const settingsMenuRef = useRef(null);
 
     // Debug logging
     useEffect(() => {
         console.log('Dashboard - isDark:', isDark);
     }, [isDark]);
+
+    // Close settings menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (settingsMenuRef.current && !settingsMenuRef.current.contains(event.target)) {
+                setShowSettingsMenu(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     // Static data
     const spendingData = [
@@ -96,6 +115,42 @@ const Dashboard = ({ isDark, toggleTheme }) => {
         { name: 'Entertainment', spent: 180, budget: 300, color: 'green' }
     ];
 
+    // Notifications data
+    const notifications = [
+        {
+            id: 1,
+            title: 'Payment Received',
+            message: 'You received $3,200.00 from Salary Deposit',
+            time: '2 hours ago',
+            type: 'success',
+            icon: Building
+        },
+        {
+            id: 2,
+            title: 'Low Balance Warning',
+            message: 'Your Credit Card balance is running low',
+            time: '5 hours ago',
+            type: 'warning',
+            icon: CreditCard
+        },
+        {
+            id: 3,
+            title: 'Investment Update',
+            message: 'Your portfolio gained 8.7% this month',
+            time: '1 day ago',
+            type: 'info',
+            icon: TrendingUp
+        },
+        {
+            id: 4,
+            title: 'Subscription Renewal',
+            message: 'Netflix subscription renewed for $15.99',
+            time: '2 days ago',
+            type: 'info',
+            icon: Smartphone
+        }
+    ];
+
     const handleAccountClick = (accountRoute) => {
         navigate(`/accounts/${accountRoute}`);
     };
@@ -105,6 +160,19 @@ const Dashboard = ({ isDark, toggleTheme }) => {
         if (toggleTheme) {
             toggleTheme();
         }
+    };
+
+    const handleProfileClick = () => {
+        setShowSettingsMenu(false);
+        navigate('/profile');
+    };
+
+    const handleLogoutClick = () => {
+        setShowSettingsMenu(false);
+        // Add logout functionality here
+        console.log('Logout clicked');
+        // For now, just show an alert
+        alert('Logout functionality would go here');
     };
 
     const formatCurrency = (amount) => {
@@ -127,29 +195,29 @@ const Dashboard = ({ isDark, toggleTheme }) => {
 
     // Theme-based styling functions
     const getBackgroundStyle = () => isDark ? 'bg-gray-950' : 'bg-gray-50';
-    
-    const getHeaderStyle = () => isDark 
-        ? 'bg-gray-950/80 border-gray-800' 
+
+    const getHeaderStyle = () => isDark
+        ? 'bg-gray-950/80 border-gray-800'
         : 'bg-white/80 border-gray-200';
-    
-    const getCardStyle = () => isDark 
-        ? 'bg-gray-900 border-gray-800' 
+
+    const getCardStyle = () => isDark
+        ? 'bg-gray-900 border-gray-800'
         : 'bg-white border-gray-200 shadow-lg';
-    
+
     const getTextPrimaryStyle = () => isDark ? 'text-white' : 'text-gray-900';
-    
+
     const getTextSecondaryStyle = () => isDark ? 'text-gray-400' : 'text-gray-600';
-    
+
     const getTextTertiaryStyle = () => isDark ? 'text-gray-500' : 'text-gray-400';
-    
+
     const getSearchStyle = () => isDark ? 'bg-gray-800' : 'bg-gray-100';
-    
+
     const getHoverStyle = () => isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100';
-    
+
     const getButtonStyle = (variant = 'secondary') => {
         if (variant === 'secondary') {
-            return isDark 
-                ? 'bg-gray-800 text-gray-300 hover:bg-gray-700' 
+            return isDark
+                ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200';
         }
         return 'bg-blue-500 text-white hover:bg-blue-600';
@@ -163,13 +231,135 @@ const Dashboard = ({ isDark, toggleTheme }) => {
 
     const getTransactionIconStyle = () => isDark ? 'bg-gray-800' : 'bg-gray-100';
 
-    const getAccountCardStyle = () => isDark 
-        ? 'bg-gray-900 border-gray-800 hover:border-gray-700' 
+    const getAccountCardStyle = () => isDark
+        ? 'bg-gray-900 border-gray-800 hover:border-gray-700'
         : 'bg-white border-gray-200 hover:border-gray-300 shadow-lg';
 
     const getAddAccountStyle = () => isDark
         ? 'bg-gray-800 text-gray-300 hover:bg-gray-700 border border-gray-700 hover:border-blue-500'
         : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-blue-300 shadow-lg';
+
+    const getMenuStyle = () => isDark
+        ? 'bg-gray-800 border-gray-700'
+        : 'bg-white border-gray-200 shadow-xl';
+
+    const getModalStyle = () => isDark
+        ? 'bg-gray-800 border-gray-700'
+        : 'bg-white border-gray-200';
+
+    const getNotificationTypeColor = (type) => {
+        switch (type) {
+            case 'success':
+                return 'text-emerald-500';
+            case 'warning':
+                return 'text-yellow-500';
+            case 'info':
+                return 'text-blue-500';
+            case 'error':
+                return 'text-red-500';
+            default:
+                return isDark ? 'text-gray-400' : 'text-gray-600';
+        }
+    };
+
+    // Settings Menu Component
+    const SettingsMenu = () => (
+        <div
+            ref={settingsMenuRef}
+            className={`absolute right-0 top-12 z-50 w-48 rounded-xl border transition-all duration-200 ${getMenuStyle()}`}
+        >
+            <div className="py-2">
+                <button
+                    onClick={handleProfileClick}
+                    className={`flex items-center w-full px-4 py-3 text-sm transition-colors duration-200 ${isDark
+                            ? 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                            : 'text-gray-700 hover:bg-gray-100'
+                        }`}
+                >
+                    <User className="w-4 h-4 mr-3" />
+                    View Profile
+                </button>
+                <button
+                    onClick={handleLogoutClick}
+                    className={`flex items-center w-full px-4 py-3 text-sm transition-colors duration-200 ${isDark
+                            ? 'text-gray-300 hover:bg-gray-700 hover:text-red-400'
+                            : 'text-gray-700 hover:bg-gray-100 hover:text-red-600'
+                        }`}
+                >
+                    <LogOut className="w-4 h-4 mr-3" />
+                    Logout
+                </button>
+            </div>
+        </div>
+    );
+
+    // Notifications Modal Component
+    const NotificationsModal = () => (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className={`relative w-full max-w-md mx-4 rounded-2xl border transition-colors duration-300 ${getModalStyle()}`}>
+                {/* Modal Header */}
+                <div className={`flex items-center justify-between p-6 border-b ${isDark ? 'border-gray-700' : 'border-gray-200'
+                    }`}>
+                    <h3 className={`text-lg font-semibold ${getTextPrimaryStyle()}`}>
+                        Notifications
+                    </h3>
+                    <button
+                        onClick={() => setShowNotifications(false)}
+                        className={`p-1 rounded-lg transition-colors duration-200 ${getHoverStyle()}`}
+                    >
+                        <X className={`w-5 h-5 ${getTextSecondaryStyle()}`} />
+                    </button>
+                </div>
+
+                {/* Modal Body */}
+                <div className="max-h-96 overflow-y-auto p-4">
+                    <div className="space-y-4">
+                        {notifications.map((notification) => {
+                            const IconComponent = notification.icon;
+                            return (
+                                <div
+                                    key={notification.id}
+                                    className={`p-4 rounded-xl border transition-colors duration-200 ${isDark
+                                            ? 'bg-gray-700 border-gray-600 hover:bg-gray-650'
+                                            : 'bg-gray-50 border-gray-100 hover:bg-gray-100'
+                                        }`}
+                                >
+                                    <div className="flex items-start space-x-3">
+                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDark ? 'bg-gray-600' : 'bg-white'
+                                            }`}>
+                                            <IconComponent className={`w-5 h-5 ${getNotificationTypeColor(notification.type)}`} />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className={`text-sm font-semibold ${getTextPrimaryStyle()}`}>
+                                                {notification.title}
+                                            </h4>
+                                            <p className={`text-sm mt-1 ${getTextSecondaryStyle()}`}>
+                                                {notification.message}
+                                            </p>
+                                            <p className={`text-xs mt-2 ${getTextTertiaryStyle()}`}>
+                                                {notification.time}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* Modal Footer */}
+                <div className={`p-4 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'
+                    }`}>
+                    <button
+                        onClick={() => setShowNotifications(false)}
+                        className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-xl font-medium transition-colors duration-200"
+                    >
+                        Mark All as Read
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
 
     return (
         <div className={`min-h-screen transition-colors duration-300 ${getBackgroundStyle()}`}>
@@ -200,22 +390,34 @@ const Dashboard = ({ isDark, toggleTheme }) => {
                                     className={`bg-transparent outline-none placeholder-gray-500 transition-colors duration-300 ${getTextPrimaryStyle()}`}
                                 />
                             </div>
-                            
+
                             {/* Theme Toggle Button */}
-                            <button 
+                            <button
                                 onClick={handleThemeToggle}
                                 className={`p-2 rounded-xl transition-all duration-200 ${getThemeButtonStyle()}`}
                                 title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
                             >
                                 {isDark ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
                             </button>
-                            
-                            <button className={`p-2 rounded-xl transition-colors duration-200 ${getHoverStyle()}`}>
+
+                            {/* Notification Button */}
+                            <button
+                                onClick={() => setShowNotifications(true)}
+                                className={`p-2 rounded-xl transition-colors duration-200 ${getHoverStyle()}`}
+                            >
                                 <Bell className={`w-6 h-6 transition-colors duration-300 ${getTextSecondaryStyle()}`} />
                             </button>
-                            <button className={`p-2 rounded-xl transition-colors duration-200 ${getHoverStyle()}`}>
-                                <Settings className={`w-6 h-6 transition-colors duration-300 ${getTextSecondaryStyle()}`} />
-                            </button>
+
+                            {/* Settings Button with Menu */}
+                            <div className="relative">
+                                <button
+                                    onClick={() => setShowSettingsMenu(!showSettingsMenu)}
+                                    className={`p-2 rounded-xl transition-colors duration-200 ${getHoverStyle()}`}
+                                >
+                                    <Settings className={`w-6 h-6 transition-colors duration-300 ${getTextSecondaryStyle()}`} />
+                                </button>
+                                {showSettingsMenu && <SettingsMenu />}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -341,7 +543,7 @@ const Dashboard = ({ isDark, toggleTheme }) => {
                                             className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors duration-200 ${selectedPeriod === period
                                                 ? 'bg-blue-500 text-white'
                                                 : `${getTextSecondaryStyle()} ${getHoverStyle()}`
-                                            }`}
+                                                }`}
                                         >
                                             {period}
                                         </button>
@@ -453,6 +655,9 @@ const Dashboard = ({ isDark, toggleTheme }) => {
                     </div>
                 </div>
             </main>
+
+            {/* Modals */}
+            {showNotifications && <NotificationsModal />}
         </div>
     );
 };
